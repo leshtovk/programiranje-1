@@ -25,7 +25,11 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_words(test_text, 'de')
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
-
+import re
+def find_words(text, substring):
+    regex = r'\b\w*' + substring + r'\w*\b'
+    matches = re.findall(regex, text)
+    print(set(matches))
 
 ###############################################################################
 # 2) Write a function [find_prefix] which returns the set of all words in a
@@ -34,7 +38,13 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_prefix(test_text, 'zi')
 # {'zibala', 'zibel', 'zibelko'}
 ###############################################################################
-
+def find_prefix(text, pattern):
+    s = set()
+    regex = r'\b' + pattern + r'[a-zA-Z]*'
+    for match in re.finditer(regex, text):
+        s.add(match.group())
+    print(s)
+        
 
 ###############################################################################
 # 3) Write a function [find_suffix] which returns the set of all words in a
@@ -43,7 +53,12 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_suffix(test_text, 'la')
 # {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 ###############################################################################
-
+def find_suffix(text, pattern):
+    s = set()
+    regex = r'[a-zA-Z]*' + pattern + r'\b'
+    for match in re.finditer(regex, text):
+        s.add(match.group())
+    print(s)
 
 ###############################################################################
 # 4) Write a function [double_letters] that returns the set of words in a
@@ -52,3 +67,18 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> double_letters('A volunteer is worth twenty pressed men.')
 # {'volunteer', 'pressed'}
 ###############################################################################
+# works only for a specific letter: 
+# def double_letters01(text, letter):
+#    s = set()
+#    regex = r'\b[a-zA-Z]*' + 2*letter + r'[a-zA-Z]*\b'
+#    for match in re.finditer(regex, text):
+#        s.add(match.group())
+#    print(s)
+
+def double_letters(text):
+    s = set()
+    regex = r'\b[a-zA-Z]*([a-zA-Z])\1[a-zA-Z]*\b'
+    for match in re.finditer(regex, text):
+        s.add(match.group())
+    print(s)
+        
