@@ -81,4 +81,3 @@ def double_letters(text):
     for match in re.finditer(regex, text):
         s.add(match.group())
     print(s)
-        
