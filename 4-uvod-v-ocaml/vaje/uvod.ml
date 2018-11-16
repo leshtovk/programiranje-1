@@ -134,7 +134,8 @@ let rec remove x = function
  # is_palindrome [1; 2; 3; 2; 1];;
  - : bool = true
  # is_palindrome [0; 0; 1; 0];;
- - : bool = false
+ - : bool = false 
+ 
 [*----------------------------------------------------------------------------*)
 
 let rec is_palindrome list = 
