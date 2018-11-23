@@ -69,10 +69,11 @@ let to_pound = function
 
  Nato napišite testni primer, ki bi predstavljal "[5; true; false; 7]".
 [*----------------------------------------------------------------------------*)
-type 'a list = Nil | Cons of ('a * 'a list) 
+
+(* type 'a list = Nil | Cons of ('a * 'a list) *) 
 
 type intbool_list = 
-  |Nil 
+  | Nil 
   | IntCons of (int * intbool_list) 
   | BoolCons of  (bool * intbool_list)    
 
@@ -87,10 +88,10 @@ val test : intbool_list = IntCons (5, BoolCons (true, Nil)) *)
 
 let rec intbool_map f_bool f_int = function
   | [] -> []
-  | IntCons (n, tail) -> let tail = intbool_map f_int f_bool tail in 
-    IntCons (f_int n, tail)
-  | BoolCons (b, tail) -> let tail = intbool_map f_int f_bool tail in 
-    BoolCons (f_bool b, tail)
+  | IntCons (n, tail) -> let new_tail = intbool_map f_int f_bool tail in 
+    IntCons (f_int n, new_tail)
+  | BoolCons (b, tail) -> let new_tail = intbool_map f_int f_bool tail in 
+    BoolCons (f_bool b, new_tail)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_reverse] obrne vrstni red elementov [intbool_list] seznama.
