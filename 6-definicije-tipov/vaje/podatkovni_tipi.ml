@@ -110,7 +110,13 @@ let rec intbool_reverse =
  vrednosti. Funkcija je repno rekurzivna in ohranja vrstni red elementov.
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_separate = ()
+let rec intbool_separate ib_list =
+  let rec ib_separate iacc bacc = function
+  | Int(x, xs) -> ib_separate (x :: iacc) bacc xs
+  | Bool(x, xs) -> ib_separate iacc (x :: bacc) xs
+  | Nil -> (iacc, bacc)
+  in
+ib_separate [] [] (intbool_reverse ib_list)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Določeni ste bili za vzdrževalca baze podatkov za svetovno priznano čarodejsko
@@ -182,6 +188,17 @@ let professor = {name = "Matija"; status = Employed (Fire,Teacher)}
  | Frost -> {counter with frost = counter.frost + 1}
  | Arcane -> {counter with arcane = counter.arcane + 1}
 
+
+(*---------------------------------------------------------------------------*]
+Example that is not covered but coul be useful :  
+
+let counter = {fire = 1; frost = 2 ; arcane = 4}
+
+ # let test3 = {counter with fire = 5 ; frost = 7} ;;
+ val test3 : magic_counter = {fire = 5; frost = 7; arcane = 4}
+
+ [*----------------------------------------------------------------------------*)
+
 (*----------------------------------------------------------------------------*]
  Funkcija [count_magic] sprejme seznam čarodejev in vrne števec uporabnikov
  različnih vrst magij.
@@ -190,7 +207,16 @@ let professor = {name = "Matija"; status = Employed (Fire,Teacher)}
  - : magic_counter = {fire = 3; frost = 0; arcane = 0}
 [*----------------------------------------------------------------------------*)
 
-let rec count_magic list = ()
+let count_magic wizard_list = 
+  let rec count counter = function 
+  | [] -> counter 
+  | {name; status} :: wizards -> (
+    match status with 
+    | Newbie -> count counter wizards 
+    | Student (magic_type, _) -> count (update counter magic_type) wizards 
+    | Employed (magic_type, _) -> count (update counter magic_type) wizards 
+   )
+  in count {fire = 0; frost = 0; arcane = 0} wizard_list 
 
 (*----------------------------------------------------------------------------*]
  Želimo poiskati primernega kandidata za delovni razpis. Študent lahko postane
@@ -206,4 +232,56 @@ let rec count_magic list = ()
  - : string option = Some "Jaina"
 [*----------------------------------------------------------------------------*)
 
-let rec find_candidate = ()
+let find_candidate magic specialization wizard_list = 
+  let year = 
+    match specialization with 
+    | Historian -> 3 
+    | Researcher -> 4 
+    | Teacher -> 5 
+ in 
+let rec search = function 
+ | [] -> None 
+ | {name ; status} :: wizards -> (
+   match status with 
+   | Student (m, y) when m = magic && y >= year -> Some name 
+   | sicer -> search wizards 
+ ) 
+in search wizard_list 
+
+(*------------------------------------------------------------------------*)
+let kosta = {name = "Kosta"; status = Student (Frost, 1)} 
+let nika = {name = "Nika"; status = Student (Fire, 5)} 
+let paola = {name = "Paola"; status = Student (Arcane, 5)} 
+let dimac = {name = "Dimitar"; status = Newbie} 
+(*-------------------------------------------------------------------------*)
+
+(*==========================================================================*)
+type magnitude = 
+  | Ascending 
+  | Peaked
+  | Slayin
+
+type stupidity = 
+  | Malevolent 
+  | Destructive 
+  | Pathetic 
+
+type description = 
+  | Idiot of stupidity 
+  | Genius of magnitude
+  | Plain 
+
+type person = {
+  name : string;
+  description : description ; 
+  age : int
+}
+
+let actress = {name = "Nika"; description = Idiot (Destructive); age = 34}
+let badass = {name = "Kosta"; description = Genius (Ascending); age = 20}
+let pesant = {name = "Simon"; description = Idiot (Pathetic); age = 19} 
+
+
+
+
+
