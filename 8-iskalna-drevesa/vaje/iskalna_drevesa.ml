@@ -6,6 +6,9 @@
  poddrevesi. Na tej točki ne predpostavljamo ničesar drugega o obliki dreves.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type 'a tree = 
+    | Empty 
+    | Node of 'a * 'a tree * 'a tree
 
 (*----------------------------------------------------------------------------*]
  Definirajmo si testni primer za preizkušanje funkcij v nadaljevanju. Testni
@@ -18,7 +21,12 @@
       0   6   11
 [*----------------------------------------------------------------------------*)
 
-
+let leaf x = Node (x, Empty, Empty)
+let test_tree = 
+    let left = Node (2, leaf 0 , Empty)  
+    and right = Node (7, leaf 6, leaf 11)
+    in Node (5, left, right)
+ 
 (*----------------------------------------------------------------------------*]
  Funkcija [mirror] vrne prezrcaljeno drevo. Na primeru [test_tree] torej vrne
           5
@@ -33,6 +41,13 @@
  Node (Empty, 2, Node (Empty, 0, Empty)))
 [*----------------------------------------------------------------------------*)
 
+let rec mirror = function
+| Empty -> Empty
+| Node (x, left, right) -> 
+let new_left = mirror right in 
+let new_right = mirror left 
+in 
+Node (x, new_left, new_right)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [height] vrne višino oz. globino drevesa, funkcija [size] pa število
@@ -43,6 +58,12 @@
  # size test_tree;;
  - : int = 6
 [*----------------------------------------------------------------------------*)
+
+let rec size = function  
+| Empty -> 0 
+| Node (x, left, right) -> 1 + size left + size right
+
+
 
 
 (*----------------------------------------------------------------------------*]
@@ -55,6 +76,9 @@
  Node (Node (Empty, true, Empty), true, Node (Empty, true, Empty)))
 [*----------------------------------------------------------------------------*)
 
+let rec map_tree f = function 
+| Empty -> Empty 
+| Node (x, left, right) -> Node (f x, map_tree f left, map_tree f right) 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [list_of_tree] pretvori drevo v seznam. Vrstni red podatkov v seznamu
@@ -64,6 +88,10 @@
  - : int list = [0; 2; 5; 6; 7; 11]
 [*----------------------------------------------------------------------------*)
 
+let rec to_list = function 
+    | Empty -> []
+    | Node (x, left, right) -> to_list left @ x :: [] @ to_list right  
+    
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
@@ -76,11 +104,28 @@
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
+let is_bst tree = 
+let rec cheat = function 
+| [] -> true 
+| [a] -> true
+| a :: (b :: tail as t) -> if a < b then cheat t 
+else false 
+in cheat (to_list tree) 
+
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  V nadaljevanju predpostavljamo, da imajo dvojiška drevesa strukturo BST.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type 'a tree = 
+    | Empty 
+    | Node of 'a * 'a tree * 'a tree
+
+    let leaf x = Node (x, Empty, Empty)
+let test_tree = 
+    let left = Node (2, leaf 0 , Empty)  
+    and right = Node (7, leaf 6, leaf 11)
+    in Node (5, left, right)
 (*----------------------------------------------------------------------------*]
  Funkcija [insert] v iskalno drevo pravilno vstavi dani element. Funkcija 
  [member] preveri ali je dani element v iskalnem drevesu.
@@ -91,6 +136,17 @@
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
+let rec member k = function 
+| Empty -> false 
+| Node (x, left, right) -> if k = x then true 
+else if k < x then member k left 
+else member k right  
+
+let rec insert k = function 
+| Empty -> leaf k 
+| Node (x, left, right) -> if k < x then Node(x, insert k left, right) 
+else if k > x then Node(x, left, insert k right) 
+else failwith "It's already in"
 
 (*----------------------------------------------------------------------------*]
  Funkcija [member2] ne privzame, da je drevo bst.
@@ -113,7 +169,26 @@
  - : int option = None
 [*----------------------------------------------------------------------------*)
 
-
+let succ tree =
+    let first_move = function 
+    | Node (x, left, right) -> right 
+    in  
+    let rec remaining = function 
+    | Empty -> None 
+    | Node (x, Empty, _) -> Some x 
+    | Node (x, left, right) -> remaining left  
+    in remaining (first_move tree)
+ 
+let pred tree = 
+    let first_move = function 
+    | Node (x, left, right) -> left
+    in  
+    let rec remaining = function 
+    | Empty -> None 
+    | Node (x, _, Empty) -> Some x 
+    | Node (x, left, right) -> remaining right  
+    in remaining (first_move tree)
+ 
 (*----------------------------------------------------------------------------*]
  Na predavanjih ste omenili dva načina brisanja elementov iz drevesa. Prvi 
  uporablja [succ], drugi pa [pred]. Funkcija [delete x bst] iz drevesa [bst] 
