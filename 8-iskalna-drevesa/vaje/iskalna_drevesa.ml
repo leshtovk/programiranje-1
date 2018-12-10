@@ -63,6 +63,9 @@ let rec size = function
 | Empty -> 0 
 | Node (x, left, right) -> 1 + size left + size right
 
+let rec height = function 
+| Empty -> 0 
+| Node (x, l, r) -> 1 + max (height l) (height r)
 
 
 
@@ -202,6 +205,14 @@ let pred tree =
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
+
+(* UNFINISHED *)
+
+let rec delete x = function 
+| Node (a, left, right) as tree -> 
+if a = x then Node (succ tree, left, right) 
+if a > x then Node (a, delete x left, right) 
+else Node (a, left, delete x right) 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
