@@ -205,6 +205,8 @@ let pred tree =
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
+(* idiot solution *)
+
 let filter k list = 
   let rec filter' k acc = function 
     | [] -> acc 
@@ -213,19 +215,34 @@ let filter k list =
   in filter' k [] list
 
 let to_tree list = 
-    let rec insert b_tree x = match b_tree with 
+  let rec insert tree x = match tree with 
     | Empty -> Node (x, Empty, Empty)
     | Node (a, left, right) -> 
-    if a = x then b_tree 
+    if a = x then tree 
     else if a > x then Node (a, insert left x, right) 
     else Node (a, left, insert right x) 
-    in List.fold_left insert Empty list 
+  in List.fold_left insert Empty list 
 
-let rec delete x tree = 
+let delete x tree = 
     let t_list = to_list tree 
     in 
     let filtered = filter x t_list 
     in to_tree filtered  
+
+(* non-idiot solution *)
+
+let rec delete x = function 
+  | Empty -> Empty 
+  | (Node (a, left, right) as t ) ->
+  if x < a then 
+    Node (a, delete x left, right) 
+  else if x > a then 
+    Node (a, left, delete x right) 
+  else (* x = a *) 
+    match succ t with 
+    | None -> left 
+    | Some s -> let right_without_s = delete s right in 
+       | Node (s, left, right_without_s)  
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -240,6 +257,12 @@ let rec delete x tree =
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
 
+type 'a tree = 
+    | Empty 
+    | Node of 'a * 'a tree * 'a tree
+
+type ('key, 'value) dict = ('key * 'value) tree
+
 (*----------------------------------------------------------------------------*]
  Napišite testni primer [test_dict]:
       "b":1
@@ -249,6 +272,10 @@ let rec delete x tree =
      "c":-2
 [*----------------------------------------------------------------------------*)
 
+
+let test_dict : (string, int) dict = 
+    Node (("b",1), Node (("a", 0), Empty, Empty),
+     Node (("d", 2), Node (("c", -2), Empty, Empty),Empty))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [dict_get key dict] v slovarju poišče vrednost z ključem [key]. Ker
@@ -260,6 +287,11 @@ let rec delete x tree =
  - : int option = Some (-2)
 [*----------------------------------------------------------------------------*)
 
+let rec get_dict k = function 
+| Empty -> None 
+| Node ((k', v), l, r) -> if k = k' them Some v 
+                       else if k < k' then get_dict k l 
+                       else get_dict k r
       
 (*----------------------------------------------------------------------------*]
  Funkcija [print_dict] sprejme slovar s ključi tipa [string] in vrednostmi tipa
@@ -276,6 +308,24 @@ let rec delete x tree =
  d : 2
  - : unit = ()
 [*----------------------------------------------------------------------------*)
+
+(* test out :
+print_newline 
+print_string 
+print_endline
+print_int 
+string_of_int 
+val unit : ()  *)
+
+let print_dict = function 
+| Empty -> ()
+| Node ((k, v), l, r) -> 
+    (print_dict l;
+    print_endline (k ^ " : " ^ (string_of_int v)); 
+    print_dict r 
+    )
+
+
 
 
 (*----------------------------------------------------------------------------*]

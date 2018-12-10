@@ -53,10 +53,13 @@ module type NAT = sig
 
   val eq   : t -> t -> bool
   val zero : t
+  val one : t
   val add : t -> t -> t 
   val sub : t -> t -> t
-  (* val to_int : t -> int *)
-  (* val of_int : int -> t *)
+  val mul : t -> t -> t
+  val to_int : t -> int 
+  (* [of_int k] if k < 0 then use 0 instead *)
+  val of_int : int -> t 
 end
 
 (*----------------------------------------------------------------------------*]
@@ -71,9 +74,15 @@ end
 module Nat_int : NAT = struct
 
   type t = int
-  let eq x y = failwith "later"
+  let eq x y = 
+    x = y 
   let zero = 0
-  (* Dodajte manjkajoče! *)
+  let one = 1 
+  let add x y = ( + ) 
+  let sub x y = x - y 
+  let mul x y -> ( * ) x y
+  let to_int n = n 
+  let of_int k = max 0 k 
 
 end
 
@@ -91,11 +100,33 @@ end
 
 module Nat_peano : NAT = struct
 
-  type t = unit (* To morate spremeniti! *)
-  let eq x y = failwith "later"
-  let zero = () (* To morate spremeniti! *)
-  (* Dodajte manjkajoče! *)
-
+  type t = Zero | S of t (*successor of another number*)
+  let rec eq x y = 
+    match (x, y) with 
+      | Zero, Zero -> true 
+      | _, Zero | Zero, _ -> false  
+      | S t1, S t2 -> eq t1 t2 
+  let zero = Zero 
+  let one = S Zero 
+  let rec add x = function 
+    | Zero -> x 
+    | S y ->   add (S x) y 
+  let rec sub x = function 
+    | Zero -> x 
+    | S y -> match x with 
+            | Zero -> failwith "Error" (* ????? *) 
+            | S x1 -> sub x1 y 
+  let rec mul x = function 
+    | Zero -> Zero 
+    | S y -> mul (add x x) y 
+  let to_int n = n 
+  let rec of_int k = 
+    if k <= 0 then Zero 
+    else S (of_int (k-1) 
+  let to_int = function 
+    | Zero -> 0 
+    | S x -> 1 + (to_int x)
+  
 end
 
 (*----------------------------------------------------------------------------*]
