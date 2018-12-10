@@ -45,7 +45,7 @@
 
  Opomba: Funkcije za pretvarjanje ponavadi poimenujemo [to_int] and [of_int],
  tako da skupaj z imenom modula dobimo ime [NAT.of_int], ki nam pove, da 
- pridobivamo naravno število iz celega števila.
+ pridobivamo naravno število iz celega števila. 
 [*----------------------------------------------------------------------------*)
 
 module type NAT = sig
@@ -53,7 +53,8 @@ module type NAT = sig
 
   val eq   : t -> t -> bool
   val zero : t
-  (* Dodajte manjkajoče! *)
+  val add : t -> t -> t 
+  val sub : t -> t -> t
   (* val to_int : t -> int *)
   (* val of_int : int -> t *)
 end

@@ -205,14 +205,28 @@ let pred tree =
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
+let filter k list = 
+  let rec filter' k acc = function 
+    | [] -> acc 
+    | x :: xs -> if x = k then acc @ xs 
+    else filter' k (x :: acc) xs
+  in filter' k [] list
 
-(* UNFINISHED *)
+let to_tree list = 
+    let rec insert b_tree x = match b_tree with 
+    | Empty -> Node (x, Empty, Empty)
+    | Node (a, left, right) -> 
+    if a = x then b_tree 
+    else if a > x then Node (a, insert left x, right) 
+    else Node (a, left, insert right x) 
+    in List.fold_left insert Empty list 
 
-let rec delete x = function 
-| Node (a, left, right) as tree -> 
-if a = x then Node (succ tree, left, right) 
-if a > x then Node (a, delete x left, right) 
-else Node (a, left, delete x right) 
+let rec delete x tree = 
+    let t_list = to_list tree 
+    in 
+    let filtered = filter x t_list 
+    in to_tree filtered  
+
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
