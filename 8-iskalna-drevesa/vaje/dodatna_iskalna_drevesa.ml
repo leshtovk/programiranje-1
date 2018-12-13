@@ -2,6 +2,16 @@
  DODATNE VAJE 
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type 'a tree = 
+  | Empty 
+  | Node of 'a * 'a tree * 'a tree
+
+  let leaf x = Node (x, Empty, Empty)
+  let test_tree = 
+    let left = Node (2, leaf 0 , Empty)  
+    and right = Node (7, leaf 6, leaf 11)
+    in Node (5, left, right)
+
 (*----------------------------------------------------------------------------*]
  Funkcija [bst_of_list] iz seznama naredi dvojiško iskalno drevo.
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -9,8 +19,19 @@
  - : bool = true
 [*----------------------------------------------------------------------------*)
 
+let bst_of_list a_list = 
+  let rec insert_el b_tree k = match b_tree with 
+    | Empty -> Node (k, Empty, Empty) 
+    | Node (h, left_st, right_st) -> 
+      if k < h then 
+        Node (h, insert_el left_st k, right_st) 
+      else if k > h then 
+        Node (h, left_st, insert_el right_st k) 
+      else (* k = h *)
+        Node (h, left_st, right_st) 
+  in List.fold_left insert_el Empty a_list
 
-(*----------------------------------------------------------------------------*]
+    (*----------------------------------------------------------------------------*]
  Funkcija [tree_sort] uredi seznam s pomočjo pretvorbe v bst in nato nazaj
  v seznam.
 
@@ -20,6 +41,13 @@
  - : string list = ["a"; "b"; "c"; "d"; "e"; "f"]
 [*----------------------------------------------------------------------------*)
 
+let tree_sort a_list = 
+  let rec tree_to_list = function 
+    | Empty -> [] 
+    | Node (h, left_st, right_st) -> 
+      tree_to_list left_st @ [h] @ tree_to_list right_st 
+  in 
+  tree_to_list (bst_of_list a_list) 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [follow directions tree] tipa [direction list -> 'a tree -> 'a option]
@@ -34,6 +62,13 @@
 [*----------------------------------------------------------------------------*)
 
 
+
+
+                         (*  !!! MUST DO !!!  *)
+
+
+
+                         
 (*----------------------------------------------------------------------------*]
  Funkcija [prune directions tree] poišče vozlišče v drevesu glede na navodila,
  ter izbriše poddrevo, ki se začne v izbranem vozlišču.

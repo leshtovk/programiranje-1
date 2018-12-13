@@ -248,7 +248,6 @@ let rec delete x = function
                 | Some s -> let right_without_s = delete s right in 
                                      Node (s, left, right_without_s)  
 
-
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
 

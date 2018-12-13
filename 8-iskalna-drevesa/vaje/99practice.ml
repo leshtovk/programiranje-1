@@ -30,7 +30,6 @@ else Node (a, left, insert right x)
 in List.fold_left insert Empty l 
 
 
-
 (* Build all trees with given [left] and [right] subtrees.  *)
 let build_trees_with left right all = 
   let add_right_tree all l = 
