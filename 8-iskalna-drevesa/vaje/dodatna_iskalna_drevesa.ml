@@ -61,13 +61,22 @@ let tree_sort a_list =
  - : int option = None
 [*----------------------------------------------------------------------------*)
 
+type 'a tree = 
+  | Empty 
+  | Node of 'a * 'a tree * 'a tree
 
+let test_tree = Node (5, Node (2, Node (0, Empty, Empty), Empty),
+  Node (7, Node (6, Empty, Empty), Node (11, Empty, Empty)))
 
+type directions = Left | Right 
 
-                         (*  !!! MUST DO !!!  *)
-
-
-
+let rec follow dir tree = match (dir, tree) with 
+  | [], Node (h, left_st, right_st) -> Some h 
+  | [], Empty -> None
+  | a_list, Empty -> None 
+  | x :: xs, Node (h, left_st, right_st) -> 
+      if x = Right then follow xs right_st
+      else (* x = Left *) follow xs left_st   
                          
 (*----------------------------------------------------------------------------*]
  Funkcija [prune directions tree] poišče vozlišče v drevesu glede na navodila,
