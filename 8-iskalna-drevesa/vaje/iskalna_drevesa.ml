@@ -63,10 +63,10 @@ let rec size = function
 | Empty -> 0 
 | Node (x, left, right) -> 1 + size left + size right
 
+
 let rec height = function 
 | Empty -> 0 
 | Node (x, l, r) -> 1 + max (height l) (height r)
-
 
 
 (*----------------------------------------------------------------------------*]
@@ -95,7 +95,6 @@ let rec to_list = function
     | Empty -> []
     | Node (x, left, right) -> to_list left @ x :: [] @ to_list right  
     
-
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
  Tree, na kratko BST). Predpostavite, da v drevesu ni ponovitev elementov, 
@@ -115,7 +114,6 @@ let rec cheat = function
 else false 
 in cheat (to_list tree) 
 
-
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  V nadaljevanju predpostavljamo, da imajo dvojiška drevesa strukturo BST.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
@@ -129,6 +127,7 @@ let test_tree =
     let left = Node (2, leaf 0 , Empty)  
     and right = Node (7, leaf 6, leaf 11)
     in Node (5, left, right)
+
 (*----------------------------------------------------------------------------*]
  Funkcija [insert] v iskalno drevo pravilno vstavi dani element. Funkcija 
  [member] preveri ali je dani element v iskalnem drevesu.
@@ -158,6 +157,11 @@ else failwith "It's already in"
  funkcije [member2] na drevesu z n vozlišči, ki ima globino log(n). 
 [*----------------------------------------------------------------------------*)
 
+let rec member2 k = function
+    | Empty -> false 
+    | Node (x, left_st, right_st) -> 
+        if k = x then true 
+        else member2 k left_st || member2 k right_st 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [succ] vrne naslednjika korena danega drevesa, če obstaja. Za drevo
@@ -232,17 +236,17 @@ let delete x tree =
 (* non-idiot solution *)
 
 let rec delete x = function 
-  | Empty -> Empty 
-  | (Node (a, left, right) as t ) ->
-  if x < a then 
-    Node (a, delete x left, right) 
-  else if x > a then 
-    Node (a, left, delete x right) 
-  else (* x = a *) 
-    match succ t with 
-    | None -> left 
-    | Some s -> let right_without_s = delete s right in 
-       | Node (s, left, right_without_s)  
+    | Empty -> Empty 
+    | (Node (a, left, right) as t ) ->
+        if x < a then 
+            Node (a, delete x left, right) 
+        else if x > a then  
+            Node (a, left, delete x right) 
+        else (* x = a *) 
+            match succ t with 
+                | None -> left 
+                | Some s -> let right_without_s = delete s right in 
+                                     Node (s, left, right_without_s)  
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -256,8 +260,7 @@ let rec delete x = function
  vrednosti, ga parametriziramo kot [('key, 'value) dict].
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
-
-type 'a tree = 
+type 'a tree =  
     | Empty 
     | Node of 'a * 'a tree * 'a tree
 
@@ -271,7 +274,6 @@ type ('key, 'value) dict = ('key * 'value) tree
          /
      "c":-2
 [*----------------------------------------------------------------------------*)
-
 
 let test_dict : (string, int) dict = 
     Node (("b",1), Node (("a", 0), Empty, Empty),
@@ -289,7 +291,7 @@ let test_dict : (string, int) dict =
 
 let rec get_dict k = function 
 | Empty -> None 
-| Node ((k', v), l, r) -> if k = k' them Some v 
+| Node ((k', v), l, r) -> if k = k' then Some v 
                        else if k < k' then get_dict k l 
                        else get_dict k r
       
@@ -314,19 +316,16 @@ print_newline
 print_string 
 print_endline
 print_int 
-string_of_int 
-val unit : ()  *)
+string_of_int
+Philipp says they're important *)
 
-let print_dict = function 
+let rec print_dict = function 
 | Empty -> ()
 | Node ((k, v), l, r) -> 
     (print_dict l;
     print_endline (k ^ " : " ^ (string_of_int v)); 
     print_dict r 
     )
-
-
-
 
 (*----------------------------------------------------------------------------*]
  Funkcija [dict_insert key value dict] v slovar [dict] pod ključ [key] vstavi
@@ -347,3 +346,13 @@ let print_dict = function
  - : unit = ()
 [*----------------------------------------------------------------------------*)
 
+let rec dict_insert k v = function 
+    | Empty -> Node ((k, v), Empty, Empty)
+    | Node ((k', v') as x, left_st, right_st) -> 
+        (* assuming lexicographic order *)
+        if k < k' then 
+            Node (x, dict_insert k v left_st, right_st) 
+        else if k > k' then
+            Node (x, left_st, dict_insert k v right_st) 
+        else 
+            Node ((k, v), left_st, right_st)
