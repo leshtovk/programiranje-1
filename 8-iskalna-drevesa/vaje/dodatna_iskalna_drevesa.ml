@@ -118,6 +118,10 @@ type 'a tree =    (* CAUTION: new definition *)
   | Empty                
   | Node of 'a tree * 'a * 'a tree  
 
+let test_tree = Node (Node (Node (Empty, 0, Empty), 2, Empty), 5,
+  Node (Node (Empty, 6, Empty), 7,
+  Node (Empty, 11, Empty)))
+
 type state = Exists | Ghost 
 
 type 'a phantom_tree = 
@@ -150,6 +154,14 @@ let rec phantomize = function
   | Node (left_st, h, right_st) -> 
       P_Node (phantomize left_st, h, Exists, phantomize right_st) 
 
+let rec kill x = function 
+  | P_Empty -> P_Empty 
+  | P_Node (left_st, h, s, right_st) -> 
+    if x = h then
+      if s = Exists then  P_Node (left_st, h, Ghost, right_st) 
+      else failwith "can't kill what is already dead bruh..."
+    else P_Node (kill x left_st, h, s, kill x right_st)
+ 
 (*----------------------------------------------------------------------------*]
  Funkcija [unphantomize] tipa ['a phantom_tree -> 'a tree] fantomskemu drevesu 
  priredi navadno drevo, ki vsebuje zgolj vozlišča, ki še obstajajo. Vrstni red
@@ -160,3 +172,26 @@ let rec phantomize = function
  # test_tree |> phantomize |> kill 7 |> kill 0 |> kill 5 |> unphantomize;;
  - : int tree = Node (Node (Node (Empty, 2, Empty), 6, Empty), 11, Empty)
 [*----------------------------------------------------------------------------*)
+
+let unphantomize ph_tree = 
+  let rec phantom_list = function 
+  (* turns a p_tree to a list without ghost elements *)
+    | P_Empty -> [] 
+    | P_Node (left_st, h, s, right_st) -> 
+      if s = Exists then 
+        phantom_list left_st @ [h] @ phantom_list right_st 
+      else 
+        phantom_list left_st @ phantom_list right_st   
+  in
+  let bst_of_list a_list =  (* to suit the new tree definition *) 
+    let rec insert a_tree x = match a_tree with  
+      | Empty -> Node (Empty, x, Empty) 
+      | Node (left_st, h, right_st) -> 
+        if x < h then 
+          Node (insert left_st x, h, right_st) 
+        else if x > h then 
+          Node (left_st, h, insert right_st x)
+        else 
+          Node (left_st, h, right_st) 
+    in List.fold_left insert Empty a_list
+  in bst_of_list (phantom_list ph_tree)
