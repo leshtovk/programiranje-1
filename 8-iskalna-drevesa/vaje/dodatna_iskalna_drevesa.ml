@@ -70,7 +70,7 @@ let test_tree = Node (5, Node (2, Node (0, Empty, Empty), Empty),
 
 type directions = Left | Right 
 
-let rec follow dir tree = match (dir, tree) with 
+let rec follow dir_list tree = match (dir_list, tree) with 
   | [], Node (h, left_st, right_st) -> Some h 
   | [], Empty -> None
   | a_list, Empty -> None 
@@ -90,6 +90,18 @@ let rec follow dir tree = match (dir, tree) with
  Some (Node (Node (Node (Empty, 0, Empty), 2, Empty), 5, Empty))
 [*----------------------------------------------------------------------------*)
 
+let rec prune dir_list tree = match dir_list, tree with
+  | [], a_tree -> Some Empty
+  | a_list, Empty -> None
+  | x :: xs, Node(h, left_st, right_st) ->
+    if x = Left then 
+      (match prune xs left_st with
+        | None -> None
+        | Some new_left_st -> Some (Node(h, new_left_st, right_st)))
+    else 
+      (match prune xs right_st with
+        |None -> None
+        | Some new_right_st -> Some (Node(h, left_st, new_right_st)))  
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  PHANTOM TREES
@@ -102,6 +114,16 @@ let rec follow dir tree = match (dir, tree) with
  predpostavljamo, da imajo drevesa obliko BST.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type 'a tree =    (* CAUTION: new definition *)
+  | Empty                
+  | Node of 'a tree * 'a * 'a tree  
+
+type state = Exists | Ghost 
+
+type 'a phantom_tree = 
+  | P_Empty 
+  (* ! See what works better for state ! *)
+  | P_Node of 'a phantom_tree * 'a * state * 'a phantom_tree 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [phantomize] tipa ['a tree -> 'a phantom_tree] navadnemu drevesu
@@ -123,6 +145,10 @@ let rec follow dir tree = match (dir, tree) with
  P_Node (P_Node (P_Empty, 3, P_Empty, Ghost), 4, P_Empty, Exists), Exists)
 [*----------------------------------------------------------------------------*)
 
+let rec phantomize = function  
+  | Empty -> P_Empty 
+  | Node (left_st, h, right_st) -> 
+      P_Node (phantomize left_st, h, Exists, phantomize right_st) 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [unphantomize] tipa ['a phantom_tree -> 'a tree] fantomskemu drevesu 
