@@ -159,7 +159,7 @@ let rec kill x = function
   | P_Node (left_st, h, s, right_st) -> 
     if x = h then
       if s = Exists then  P_Node (left_st, h, Ghost, right_st) 
-      else failwith "can't kill what is already dead bruh..."
+      else failwith "can't be done"
     else P_Node (kill x left_st, h, s, kill x right_st)
  
 (*----------------------------------------------------------------------------*]
