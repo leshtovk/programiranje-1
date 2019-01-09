@@ -1,7 +1,7 @@
 ##############################################################################
 # Želimo definirati pivotiranje na mestu za tabelo [a]. Ker bi želeli
 # pivotirati zgolj dele tabele, se omejimo na del tabele, ki se nahaja med
-# indeksoma [start] in [end].
+# indeksoma [start] in [end].   
 #
 # Primer: za [start = 0] in [end = 8] tabelo
 #
@@ -27,7 +27,34 @@
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ##############################################################################
 
+def pivot(alist, start, end):
+   pivotvalue = alist[start]
 
+   leftmark = start+1
+   rightmark = end
+
+   done = False
+   while not done:
+
+       while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+           leftmark = leftmark + 1
+
+       while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
+           rightmark = rightmark -1
+
+       if rightmark < leftmark:
+           done = True
+       else:
+           temp = alist[leftmark]
+           alist[leftmark] = alist[rightmark]
+           alist[rightmark] = temp
+
+   temp = alist[start]
+   alist[start] = alist[rightmark]
+   alist[rightmark] = temp
+
+
+   return rightmark
 
 ##############################################################################
 # Tabelo a želimo urediti z algoritmom hitrega urejanja (quicksort).
@@ -43,7 +70,16 @@
 #   [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ##############################################################################
 
+def quickSort(alist):
+   quickSortHelper(alist,0,len(alist)-1)
 
+def quickSortHelper(alist,first,last):
+   if first<last:
+
+       splitpoint = pivot(alist,first,last)
+
+       quickSortHelper(alist,first,splitpoint-1)
+       quickSortHelper(alist,splitpoint+1,last)
 
 ##############################################################################
 # V tabeli želimo poiskati vrednost k-tega elementa po velikosti.

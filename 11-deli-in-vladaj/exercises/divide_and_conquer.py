@@ -27,7 +27,21 @@
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ##############################################################################
 
-
+def pivot(array, start, end):
+   
+   pivotIndex = start
+   storeIndex = pivotIndex + 1 
+   rightmostIndex = end
+  
+   for i in range(pivotIndex + 1, rightmostIndex):
+       
+       if array[i] < array[pivot]:
+           array[i], array[storeIndex] = array[storeIndex], array[i]
+           storeIndex += 1  
+   array[pivotIndex], array[storeIndex - 1] = array[storeIndex - 1], array[pivotIndex]
+   
+   return storeIndex - 1
+       
 
 ##############################################################################
 # We wish to implement quicksort.
@@ -43,7 +57,14 @@
 #   [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ##############################################################################
 
+def quicksort_part(array, start, end): 
+    
+    i = pivot(array, start, end)
 
+    quicksort_part(array, start, i - 1) 
+    quicksort_part(array, i + 1, end) 
+
+# finish this later 
 
 ##############################################################################
 # We are searching for the k-th smallest element of an array.
