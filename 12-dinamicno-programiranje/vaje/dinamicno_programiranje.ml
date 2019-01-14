@@ -21,6 +21,19 @@ let test_matrix =
      [| 2 ; 4 ; 5 |];
      [| 7 ; 0 ; 1 |] |]
 
+let max_cheese grid = 
+  let dimx = Array.length grid in 
+  if dimx = 0 then 0 else 
+  let dimy = Array.length grid.(0) in 
+  let rec best_path x y = 
+    (* let _ = print_endline (string_of_int x ^ ", " ^ string_of_int y) in *)
+    (* it's going to print each step of the recursion and save the unit in an unused variable *)
+    let current = grid.(x).(y) in 
+    let best_down = if (y+1) = dimy then 0 else best_path x (y+1) 
+    and best_right = if (x+1) = dimx then 0 else best_path (x+1) y in 
+    current + max best_right best_down 
+    in best_path 0 0 
+
 (*----------------------------------------------------------------------------*]
  Rešujemo problem sestavljanja alternirajoče obarvanih stolpov. Imamo štiri
  različne tipe gradnikov, dva modra in dva rdeča. Modri gradniki so višin 2 in
@@ -36,3 +49,5 @@ let test_matrix =
  # alternating_towers 10;;
  - : int = 35
 [*----------------------------------------------------------------------------*)
+
+

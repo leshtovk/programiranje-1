@@ -61,10 +61,11 @@ let max_skupno' = curry (memoiziraj_rec (fun max_skupno (xs, ys) ->
 
 
 let memoiziraj_rec2 odviti_f odviti_g =
+  let find_opt x y = try Some (Hashtbl.find x y) with Not_found -> None in
   let rezultati_f = Hashtbl.create 512
   and rezultati_g = Hashtbl.create 512 in
   let rec mem_f x =
-    match Hashtbl.find_opt rezultati_f x with
+    match find_opt rezultati_f x with
     | None ->
         let y = odviti_f mem_f mem_g x in
         Hashtbl.add rezultati_f x y;
@@ -72,7 +73,7 @@ let memoiziraj_rec2 odviti_f odviti_g =
     | Some y ->
         y
   and mem_g x =
-    match Hashtbl.find_opt rezultati_g x with
+    match find_opt rezultati_g x with
     | None ->
         let y = odviti_g mem_f mem_g x in
         Hashtbl.add rezultati_g x y;

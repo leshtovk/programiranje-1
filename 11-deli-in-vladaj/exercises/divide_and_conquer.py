@@ -57,6 +57,8 @@ def pivot(array, start, end):
 #   [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ##############################################################################
 
+#unfinished
+
 def quicksort_part(array, start, end): 
     
     i = pivot(array, start, end)
