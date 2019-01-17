@@ -9,6 +9,9 @@
  val l : int list = [0; 1; 0; 4; 0; 9; 1; 2; 5; 4]
 [*----------------------------------------------------------------------------*)
 
+let rec randlist len max = 
+  if len <= 0 then []
+  else Random.int max :: (randlist (len - 1) max)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  We can now use [randlist] to test our sorting functions (named [our_sort] in
@@ -35,13 +38,22 @@
  - : int list = [7]
 [*----------------------------------------------------------------------------*)
 
+let rec insert k = function
+  | [] -> k :: []
+  | x :: xs -> if k > x then x :: insert k xs 
+              else k :: x :: xs 
 
 (*----------------------------------------------------------------------------*]
  The empty list is sorted. The function [insertion_sort] sorts a list by
  consecutively inserting all of its elements into the empty list.
 [*----------------------------------------------------------------------------*)
 
-
+let insertion_sort a_list = 
+  let rec aux acc = function 
+    | [] -> acc 
+    | x :: xs -> aux (insert x acc) xs 
+  in 
+  aux [] a_list 
 
 (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
  Selection Sort
@@ -53,6 +65,26 @@
  first occurance of [z] removed. If the list is empty it returns [None].
 [*----------------------------------------------------------------------------*)
 
+let rec remove_first k = function 
+  | [] -> failwith "not found"
+  | x :: xs -> if x = k then xs
+              else x :: (remove_first k xs)
+
+let find_min a_list = if a_list = 
+  [] then failwith "empty" 
+  else 
+  let rec aux i = function                
+    | [] -> i 
+    | x :: xs -> if x < i then aux x xs
+                else aux i xs
+  in aux (List.hd a_list) a_list  
+
+let min_and_rest a_list = 
+  if a_list = [] then None 
+  else 
+  let z = find_min a_list in 
+  let a_list' = remove_first z a_list in 
+  Some (z, a_list') 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Selection sort works by keeping a list partitioned into two sublists where the
@@ -72,7 +104,12 @@
  Hint: Use [min_and_rest] from the previous exercise.
 [*----------------------------------------------------------------------------*)
 
-
+let selection_sort a_list = 
+  let rec aux acc a_list = match min_and_rest a_list with  
+   | None -> acc 
+   | Some (z, a_list') -> aux (z :: acc) a_list' 
+  in 
+  List.rev(aux [] a_list)  
 
 (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
  Selection Sort with Arrays
@@ -101,14 +138,25 @@
  - : int array = [|0; 4; 2; 3; 1|]
 [*----------------------------------------------------------------------------*)
 
+let swap an_array i j = 
+  let stored = an_array.(i) in 
+  an_array.(i) <- an_array.(j); 
+  an_array.(j) <- stored 
 
 (*----------------------------------------------------------------------------*]
  The function [index_min a lower upper] computes the index of the smallest
  element in [a] between indices [lower] and [upper] (both included).
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- index_min [|0; 2; 9; 3; 6|] 2 4 = 4
+ index_min [|0; 2; 9; 3; 6|] 2 4 = 3
 [*----------------------------------------------------------------------------*)
 
+let index_min a lower upper =
+  let index_min = ref lower in
+  for i = lower to upper do
+    if a.(i) < a.(!index_min) then
+      index_min := i
+  done;
+  !index_min
 
 (*----------------------------------------------------------------------------*]
  The function [selection_sort_array] implements in-place selection sort.
@@ -117,3 +165,9 @@
  [Array.to_list] combined with [randlist].
 [*----------------------------------------------------------------------------*)
 
+let selection_sort_array a = 
+  let index_end = (Array.length a - 1) in  
+  for boundary_sorted = 0 to index_end do 
+    let i = index_min a boundary_sorted index_end in 
+    swap a i boundary_sorted  
+  done; a  
