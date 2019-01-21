@@ -31,8 +31,8 @@ let max_cheese grid =
     let current = grid.(x).(y) in 
     let best_down = if (y+1) = dimy then 0 else best_path x (y+1) 
     and best_right = if (x+1) = dimx then 0 else best_path (x+1) y in 
-    current + max best_right best_down 
-    in best_path 0 0 
+    current + max best_right best_down    
+  in best_path 0 0 
 
 (*----------------------------------------------------------------------------*]
  Rešujemo problem sestavljanja alternirajoče obarvanih stolpov. Imamo štiri
